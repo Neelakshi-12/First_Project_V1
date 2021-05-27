@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "1003318115892",
+    "project_id": "firstproject-5ca10",
+    "storage_bucket": "firstproject-5ca10.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003318115892:android:32aa097a5c4a03c2fd9461",
+        "android_client_info": {
+          "package_name": "com.firstproject_v2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1003318115892-k5o8bpvr59o59qmd25f86u8fmpamfmbd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAm_0JAqQ9ExZhQ4O7HE2dC8x8dLhEqNrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1003318115892-k5o8bpvr59o59qmd25f86u8fmpamfmbd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003318115892:android:39507c24031eebeafd9461",
+        "android_client_info": {
+          "package_name": "com.firstprojectv1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1003318115892-c1ticeck5huceeiffbl1at6f4krrjqk2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.firstprojectv1",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1003318115892-k5o8bpvr59o59qmd25f86u8fmpamfmbd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAm_0JAqQ9ExZhQ4O7HE2dC8x8dLhEqNrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1003318115892-k5o8bpvr59o59qmd25f86u8fmpamfmbd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
