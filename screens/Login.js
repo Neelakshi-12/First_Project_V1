@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Button from "../components/Button";
 import LabeledInput from "../components/LabeledInput";
 import validator from "validator";
-import {auth} from "firebase";
+import {auth , firestore} from "firebase";
 
 
 const validateFields = (email, password) => {
@@ -22,7 +22,8 @@ const validateFields = (email, password) => {
 };
 
 const login = (email, password) => {
-    auth().signInWithEmailAndPassword(email, password)
+    auth()
+        .signInWithEmailAndPassword(email, password)
         .then(() => {
             console.log("Logged in!");
         });
@@ -36,13 +37,13 @@ const createAccount = (email, password) => {
 
         .then(() => {
             console.log("Creating user...");
-    //         const uid = auth().currentUser.uid
-    //         firestore().collection("users")
-    //         .add({id : uid ,
-    //             email : email
-    //         }).then(() => {
-    //             console.log("added!");
-    //         });
+            const uid = auth().currentUser.uid
+            firestore().collection("users")
+            .add({id : uid ,
+                email : email
+            }).then(() => {
+                console.log("added!");
+            });
         });
 };
 
