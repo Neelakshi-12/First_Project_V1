@@ -1,112 +1,109 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import React, { useState, useEffect } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import Home from "./screens/Home";
+import Settings from "./screens/Settings";
+import EditList from "./screens/EditList";
+import Login from "./screens/Login";
+import * as firebase from "firebase";
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+const Stack = createStackNavigator();
+const AuthStack = createStackNavigator();
+const AuthScreens = () => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+      <AuthStack.Navigator>
+          <AuthStack.Screen name="Login" 
+          component={Login} 
+          options={() => {
+            return {
+                headerStyle: {
+                    backgroundColor: "#000",
+                },
+                headerTintColor: "white",
+            };
+        }}
+          />
+      </AuthStack.Navigator>
   );
 };
+const Screens = () => {
+   return(
+    <Stack.Navigator>
+    <Stack.Screen name="TODOS" 
+    component={Home}
+    options={() => {
+      return {
+          headerStyle: {
+              backgroundColor: "#000",
+          },
+          headerTintColor: "white",
+      };
+  }}
+    />
+     <Stack.Screen name="Settings" component={Settings} 
+      options={() => {
+        return {
+            headerStyle: {
+                backgroundColor: "#000",
+            },
+            headerTintColor: "white",
+        };
+    }}
+    />
+    <Stack.Screen
+        name="Edit"
+        component={EditList}
+        options={({ route }) => {
+            return {
+                title: route.params.title
+                    ? `Edit ${route.params.title} list`
+                    : "Create new list",
+                headerStyle: {
+                    backgroundColor: "#000",
+                },
+                headerTintColor: "white",
+            };
+        }}
+    />
+</Stack.Navigator>
+   );
+}
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(()=> {
+    if (firebase.auth().currentUser) {
+      setIsAuthenticated(true);
+  }
+  firebase.auth().onAuthStateChanged((user) => {
+      console.log("Checking auth state...");
+      if (user) {
+          setIsAuthenticated(true);
+      } else {
+          setIsAuthenticated(false);
+      }
+  });    
+  },[]);
+  return(
+  <NavigationContainer>
+    {isAuthenticated ? <Screens /> : <AuthScreens />}
+  </NavigationContainer>
+);
+}
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>0
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+var firebaseConfig = {
+  apiKey: "AIzaSyDTgHrphTU3WdvbGuNhbrs4a03z8hgE89w",
+  authDomain: "reactnativefirstapp-917cc.firebaseapp.com",
+  projectId: "reactnativefirstapp-917cc",
+  storageBucket: "reactnativefirstapp-917cc.appspot.com",
+  messagingSenderId: "415625380525",
+  appId: "1:415625380525:web:37d4430fc09bff870a7c24"
 };
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
-export default App;
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+  firebase.firestore().settings({ experimentalForceLongPolling: true }); //add this..
+} else {
+  firebase.app(); // if already initialized, use that one
+}
