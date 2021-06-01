@@ -1,18 +1,15 @@
-import React , { useLayoutEffect , useState , useEffect} from "react";
+import React , { useLayoutEffect , useState} from "react";
 import {
     StyleSheet,
     Text,
     View,
     TouchableOpacity,
-    FlatList
+    FlatList,
+    AsyncStorage,
+    Alert,
 } from "react-native";
-import {
-    onSnapshot,
-    addDoc,
-    removeDoc,
-    updateDoc,
-} from "../services/collections";
 import {auth , firestore} from "firebase";
+import { useEffect } from "react";
 
 const ListButton = ({title,navigation , onOptions, onDelete}) => {
     return(
@@ -45,51 +42,66 @@ const renderAddListIcon = (navigation , addItemToLists) => {
   );
 };
 export default({navigation}) => {
-    const [lists, setLists] = useState([]);
-    const listsRef = firestore()
-        .collection("users")
-        .doc(auth().currentUser.uid)
-        .collection("lists");
+    const [lists,setLists] = useState([]);
+    // useEffect(() => {
+    //     firestore().collection('Todos')
+    //     .where("Userid " , "==" , auth().currentUser.uid)
+    //     .onSnapshot((querySnapshot) => {
+    //         let todosList= [];
+    //         querySnapshot.forEach((doc) => {
+    //             todoList.push({...doc.data(), id: doc.id});
+    //         });
+    //         setLists(todosList);
+    //         console.log(lists);
+    //     });
+    // }, []);    
+   
 
-    useEffect(() => {
-        onSnapshot(
-            listsRef,
-            (newLists) => {
-                setLists(newLists);
-            },
-            {
-                sort: (a, b) => {
-                    if (a.index < b.index) {
-                        return -1;
-                    }
+    const addItemToLists =async (item) => {     // C = create operation || add task
+        console.log(item);
+        console.log("savebtn");
+        const uid = auth().currentUser.uid
+        let tid=0;
+        try{
+             tid=parseInt(await AsyncStorage.getItem('taskid'),10)
+        }catch(e){
+            console.log("error",e.message);
+        }
+        if(tid>=0){
+         
+        }else{
+            tid=0; 
+        }
+        console.log("tid",tid);
 
-                    if (a.index > b.index) {
-                        return 1;
-                    }
-
-                    return 0;
-                },
-            }
-        );
-    }, []);
-
-    const addItemToLists = ({ title }) => {
-        // lists.push(item);
+         firestore().collection('Todos')
+                .add({
+                    Userid : uid,
+                    taskid :tid,
+                    task:item['title'],
+                    isCompleted : "false",
+                    createdDate:new Date()
+                }).then((res)=>{
+                    console.log("success")
+                }).catch(e=>{
+                    console.log("error",e);
+                })
+                AsyncStorage.setItem('taskid',(tid+1).toString())
+        //     lists.push(item);
         // setLists([...lists]); //spread Operator
-        const index = lists.length > 1 ? lists[lists.length - 1].index + 1 : 0;
-        addDoc(listsRef, { title, index });
+        Alert.alert("Task Added!");
+    }
+
+    
+    const removeItemFromLists = (index) => {       //Delete operation || Delete task
+        lists.splice(index,1);
+        setLists([...lists]);
+
     }
     
-    const removeItemFromLists = (id) => {
-        // // lists.splice(index,1);
-        // // setLists([...lists])
-        // removeDoc(listsRef, id);
-    }
-    
-    const updateItemFromLists = (id, item) => {
-        // // lists[index] = item;
-        // // setLists([...lists]); 
-        // updateDoc(listsRef, id, item);
+    const updateItemFromLists = (index , item) => {         //Update Operation || Edit task
+        lists[index] = item;   
+        setLists([...lists]); a
     }
 
     useLayoutEffect(() =>{
@@ -97,19 +109,36 @@ export default({navigation}) => {
         headerRight :()=> renderAddListIcon(navigation , addItemToLists)
     })
     })
+
+
+    useEffect(() => {                                  // Read Operation 
+        firestore().collection('Todos')
+        .where("Userid","==",auth().currentUser.uid)
+        .onSnapshot((querySnapshot)=>{
+           let todoList=[];
+           querySnapshot.forEach((doc)=>{
+                 todoList.push({...doc.data(), id: doc.id});
+           })
+           setLists(todoList);
+           //console.log(lists);
+
+        })
+   }
+   );
     return(
         <View style={styles.container}>
             <FlatList 
+            
             data={lists}
-            renderItem={({item :{title},index})=> {
+            renderItem={({item})=> {
                return(
-                    <ListButton title={title}
+                 <ListButton title={item.task}
                     navigation={navigation}
                     onDelete={() => removeItemFromLists(index)}
                     onOptions={() => {navigation.navigate("Edit",
                     {
-                        title,
-                        saveChanges: (item) => updateItemFromLists(index, item)
+                        item,
+                        saveChanges: (item) => updateItemFromLists(taskid, item)
                     })
                 }}
                     />
