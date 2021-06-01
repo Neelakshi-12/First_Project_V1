@@ -1,4 +1,4 @@
-import React , { useLayoutEffect , useState} from "react";
+import React , { useLayoutEffect , useState , useEffect} from "react";
 import {
     StyleSheet,
     Text,
@@ -6,6 +6,13 @@ import {
     TouchableOpacity,
     FlatList
 } from "react-native";
+import {
+    onSnapshot,
+    addDoc,
+    removeDoc,
+    updateDoc,
+} from "../services/collections";
+import {auth , firestore} from "firebase";
 
 const ListButton = ({title,navigation , onOptions, onDelete}) => {
     return(
@@ -38,25 +45,51 @@ const renderAddListIcon = (navigation , addItemToLists) => {
   );
 };
 export default({navigation}) => {
-    const [lists,setLists] = useState([
-        {title: "Todo1"},
-        {title: "Todo2"},
-        {title: "Todo3"}
-    ]);
+    const [lists, setLists] = useState([]);
+    const listsRef = firestore()
+        .collection("users")
+        .doc(auth().currentUser.uid)
+        .collection("lists");
 
-    const addItemToLists = (item) => {
-        lists.push(item);
-        setLists([...lists]); //spread Operator
+    useEffect(() => {
+        onSnapshot(
+            listsRef,
+            (newLists) => {
+                setLists(newLists);
+            },
+            {
+                sort: (a, b) => {
+                    if (a.index < b.index) {
+                        return -1;
+                    }
+
+                    if (a.index > b.index) {
+                        return 1;
+                    }
+
+                    return 0;
+                },
+            }
+        );
+    }, []);
+
+    const addItemToLists = ({ title }) => {
+        // lists.push(item);
+        // setLists([...lists]); //spread Operator
+        const index = lists.length > 1 ? lists[lists.length - 1].index + 1 : 0;
+        addDoc(listsRef, { title, index });
     }
     
-    const removeItemFromLists = (index) => {
-        lists.splice(index,1);
-        setLists([...lists])
+    const removeItemFromLists = (id) => {
+        // // lists.splice(index,1);
+        // // setLists([...lists])
+        // removeDoc(listsRef, id);
     }
     
-    const updateItemFromLists = (index , item) => {
-        lists[index] = item;
-        setLists([...lists]); 
+    const updateItemFromLists = (id, item) => {
+        // // lists[index] = item;
+        // // setLists([...lists]); 
+        // updateDoc(listsRef, id, item);
     }
 
     useLayoutEffect(() =>{

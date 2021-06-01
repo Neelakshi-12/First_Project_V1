@@ -6,6 +6,7 @@ import validator from "validator";
 import {auth , firestore} from "firebase";
 
 
+      
 const validateFields = (email, password) => {
     const isValid = {
         email: validator.isEmail(email),
@@ -29,7 +30,7 @@ const login = (email, password) => {
         });
 };
 
-const createAccount = (email, password) => {
+const createAccount = (email, password , nameField , number) => {
     
     auth()
         
@@ -40,7 +41,9 @@ const createAccount = (email, password) => {
             const uid = auth().currentUser.uid
             firestore().collection("users")
             .add({id : uid ,
-                email : email
+                email : email,
+                name : nameField ,
+                number : number
             }).then(() => {
                 console.log("added!");
             });
@@ -49,27 +52,27 @@ const createAccount = (email, password) => {
 
 
 export default () => {
-        const [isCreateMode, setCreateMode] = useState(false);
-        const [nameField, setnameField] = useState({
-            text: "",
-            errorMessage: "",
-        });
-        const [number, setnumber] = useState({
-            number: "",
-            errorMessage: "",
-        });
-        const [emailField, setEmailField] = useState({
-            text: "",
-            errorMessage: "",
-        });
-        const [passwordField, setPasswordField] = useState({
-            text: "",
-            errorMessage: "",
-        });
-        const [passwordReentryField, setPasswordReentryField] = useState({
-            text: "",
-            errorMessage: "",
-        });
+    const [isCreateMode, setCreateMode] = useState(false);
+    const [nameField, setnameField] = useState({
+        text: "",
+        errorMessage: "",
+    });
+    const [number, setnumber] = useState({
+        number: "",
+        errorMessage: "",
+    });
+    const [emailField, setEmailField] = useState({
+        text: "",
+        errorMessage: "",
+    });
+    const [passwordField, setPasswordField] = useState({
+        text: "",
+        errorMessage: "",
+    });
+    const [passwordReentryField, setPasswordReentryField] = useState({
+        text: "",
+        errorMessage: "",
+    });
 
     return(
         <View style={styles.container}> 
@@ -179,7 +182,7 @@ export default () => {
 
                     if (isAllValid) {
                         isCreateMode
-                            ? createAccount(emailField.text, passwordField.text)
+                            ? createAccount(emailField.text, passwordField.text , nameField.text , number.number)
                             : login(emailField.text, passwordField.text);
                     }
                 }}

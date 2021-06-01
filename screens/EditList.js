@@ -69,8 +69,8 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     input: {
-        color: "#000",
-        borderBottomColor:"#000",
+        color: "white",
+        borderBottomColor:"white",
         borderBottomWidth: 0.5,
         marginHorizontal: 5,
         padding: 3,
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     label: {
-        color: "#000",
+        color: "white",
         fontWeight: "bold",
         fontSize: 20,
         marginBottom: 8,
