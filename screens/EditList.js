@@ -5,13 +5,18 @@ import {
     TextInput,
     View,
     TouchableOpacity,
-    FlatList
+    FlatList,
+    AsyncStorage,
+    Toast
 } from "react-native";
 import { CommonActions } from "@react-navigation/native";
+import { useEffect } from "react";
+import {auth , firestore} from "firebase";
 
 export default ({navigation,route}) => {
-    const [title, setTitle] =  useState(route.params.title || "");
+    const [title, setTitle] =  useState(route.params.task || "");
     const [isValid, setValidity] = useState(true);
+  
 
     return(
         <View style={styles.container}>
@@ -45,10 +50,18 @@ export default ({navigation,route}) => {
                 />
             </View>
         </View>
-            <TouchableOpacity style={styles.saveButton} onPress={()=> {
-                if (title.length > 1) {
-                    route.params.saveChanges({ title });
-                    navigation.dispatch(CommonActions.goBack());
+            <TouchableOpacity style={styles.saveButton} onPress={ async ()=> {
+                if (!title==" ") {
+                    console.log("task",route.params.taskid,route.params.task,title);
+                   firestore().collection("Todos")
+                   .doc(await AsyncStorage.getItem('taskid'+ route.params.taskid))
+                   .update({
+                       task : title,
+                   }).then(() => {
+                       console.log("Updated!");
+                       navigation.dispatch(CommonActions.goBack());    //for navigation
+                    //    Toast.show('Updated!!');
+                   })
                 } else {
                     setValidity(false);
                 }

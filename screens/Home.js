@@ -93,16 +93,17 @@ export default({navigation}) => {
     }
 
     
-    const removeItemFromLists = (index) => {       //Delete operation || Delete task
-        lists.splice(index,1);
-        setLists([...lists]);
+    const removeItemFromLists = async (index) => {       //Delete operation || Delete task
+       await firestore().collection("Todos")
+        .doc(await AsyncStorage.getItem('taskid'+ index))
+        .delete()
+        .then(() => {
+            console.log("Deleted!");
+         //    Toast.show('Updated!!');
+        })
 
     }
     
-    const updateItemFromLists = (index , item) => {         //Update Operation || Edit task
-        lists[index] = item;   
-        setLists([...lists]); a
-    }
 
     useLayoutEffect(() =>{
     navigation.setOptions({
@@ -118,6 +119,8 @@ export default({navigation}) => {
            let todoList=[];
            querySnapshot.forEach((doc)=>{
                  todoList.push({...doc.data(), id: doc.id});
+                 AsyncStorage.setItem('taskid'+doc.data().taskid, doc.id)    //update
+
            })
            setLists(todoList);
            //console.log(lists);
@@ -134,13 +137,10 @@ export default({navigation}) => {
                return(
                  <ListButton title={item.task}
                     navigation={navigation}
-                    onDelete={() => removeItemFromLists(index)}
-                    onOptions={() => {navigation.navigate("Edit",
-                    {
-                        item,
-                        saveChanges: (item) => updateItemFromLists(taskid, item)
-                    })
-                }}
+                    onDelete={() => removeItemFromLists(item.taskid)}
+                    onOptions={() => {
+                        navigation.navigate("Edit", {task : item.task , taskid : item.taskid});
+                    }}
                     />
                );
             }}

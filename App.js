@@ -55,8 +55,8 @@ const Screens = () => {
         component={EditList}
         options={({ route }) => {
             return {
-                title: route.params.title
-                    ? `Edit ${route.params.title} list`
+                title: route.params.task
+                    ? `Edit list`
                     : "Create new list",
                 headerStyle: {
                     backgroundColor: "#000",
